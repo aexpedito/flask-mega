@@ -19,8 +19,9 @@ class TbUser(UserMixin, db.Model):
         return check_password_hash(self.user_password, password)
 
     def set_userid(self):
-        max_user = db.session.query(db.func.max(TbUser.user_id)).scalar
-        self.user_id = int(max_user) + 1
+        max_user = db.session.query(func.max(TbUser.user_id))
+        max_user_value = max_user.scalar()
+        self.user_id = int(max_user_value) + 1
 
     def __repr__(self):
         return '<TbUser {}>'.format(self.user_name)
