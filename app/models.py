@@ -3,14 +3,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
 from sqlalchemy import func
-from sqlalchemy.orm import sessionmaker
-
+from hashlib import md5
+from datetime import datetime
 
 class TbUser(UserMixin, db.Model):
     user_id = db.Column(db.Integer)
     user_name = db.Column(db.String(255))
     user_email = db.Column(db.String(255), primary_key=True)
     user_password = db.Column(db.String(255))
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):
         self.user_password = generate_password_hash(password)
@@ -29,6 +31,9 @@ class TbUser(UserMixin, db.Model):
     def get_id(self):
         return self.user_email
 
+    def avatar(self, size):
+        digest = md5(self.user_email.lower().encode('utf-8')).hexdigest()
+        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
 
 #Because Flask-Login knows nothing about databases, it needs the application's help in loading a user. For that reason, the extension expects that the application will configure a user loader function, that can be called to load a user given the ID
 @login.user_loader
