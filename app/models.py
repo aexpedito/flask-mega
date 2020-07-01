@@ -5,6 +5,7 @@ from app import login
 from sqlalchemy import func
 from hashlib import md5
 from datetime import datetime
+from sqlalchemy.schema import Sequence, CreateSequence
 
 followers = db.Table('followers',
     db.Column('follower_email', db.String, db.ForeignKey('tb_user.user_email')),
@@ -12,13 +13,15 @@ followers = db.Table('followers',
 )
 
 class TbUser(UserMixin, db.Model):
-    user_id = db.Column(db.Integer)
+    user_seq_id = Sequence('user_seq_id')
+    user_id = db.Column(db.Integer, user_seq_id, server_default=user_seq_id.next_value())
     user_name = db.Column(db.String(255))
     user_email = db.Column(db.String(255), primary_key=True)
     user_password = db.Column(db.String(255))
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+
 
     def set_password(self, password):
         self.user_password = generate_password_hash(password)
@@ -27,9 +30,7 @@ class TbUser(UserMixin, db.Model):
         return check_password_hash(self.user_password, password)
 
     def set_userid(self):
-        max_user = db.session.query(func.max(TbUser.user_id))
-        max_user_value = max_user.scalar()
-        self.user_id = int(max_user_value) + 1
+        pass
 
     def __repr__(self):
         return '<TbUser {}>'.format(self.user_name)

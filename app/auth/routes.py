@@ -38,7 +38,7 @@ def register():
     if form.validate_on_submit():
         user = TbUser(user_name=form.username.data, user_email=form.email.data)
         user.set_password(form.password.data)
-        user.set_userid()
+        #user.set_userid()
         db.session.add(user)
         db.session.commit()
         flash('You are registered now')
