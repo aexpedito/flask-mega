@@ -1,0 +1,21 @@
+
+version: "3.9"
+
+services: 
+  db_flask:
+    build: 
+      context: .
+      dockerfile: ./postgres/Dockerfile
+    image: flask_m_db:1.0
+    ports: 
+      - "5432:5432"
+  flask_m_web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: flask_m_web:1.0
+    ports: 
+        - "8080:8080"
+    depends_on: 
+      - db_flask
+
