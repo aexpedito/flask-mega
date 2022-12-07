@@ -16,3 +16,6 @@ docker build -t indecision_app .
 #compose
 $ docker-compose up 
 $ docker-compose up --build
+
+
+docker run -d --rm -p 5432:5432 -v C:\Users\afonsoe\Documents\pessoal\scripts\git-projects\flask-mega\postgres\data:/var/lib/postgresql/data local_postgres_flask_mega:1.0

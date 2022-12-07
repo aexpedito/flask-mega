@@ -59,12 +59,26 @@ class TbUser(UserMixin, db.Model):
         secondaryjoin=(followers.c.followed_email == user_email),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
+    def followed_posts(self):
+        Post.query.join(followers, (followers.c.followed_email == Post.user_email)).filter(followers.c.follower_email == self.user_email).order_by(Post.timestamp.desc())
+        
+        own = Post.query.filter_by(user_email=self.user_email)
+        
+        return followed.union(own).order_by(Post.timestamp.desc())
+
 class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    post_seq_id = Sequence('post_seq_id')
+    id = db.Column(db.Integer, post_seq_id, server_default=post_seq_id.next_value(), primary_key=True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_email = db.Column(db.String(140), db.ForeignKey('tb_user.user_email'))
 
+    def set_body(self, comment):
+        self.body = comment
+
+    def set_user_email(self, user_email):
+        self.user_email = user_email
+    
     def __repr__(self):
         return '<Post {}>'.format(self.body)
 

@@ -2,4 +2,14 @@
 
 {% block content %}
     <h1>Hi, {{ user.user_name }}!</h1>
+    <h2>Share your comment</h2>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.comment.label }}<br>
+            {{ form.comment(size=140) }}<br>
+        </p>
+        
+        <p>{{ form.submit() }}</p>
+    </form>
 {% endblock %}
